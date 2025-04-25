@@ -1,21 +1,26 @@
 part of 'product_list_cubit.dart';
 
 @immutable
-sealed class ProductListState {
+abstract class ProductListState {
   final List<ProductListModel> products;
   const ProductListState(this.products);
 
-  // this=>proc();
+  List<Object?> get props => [products];
 }
 
-final class ProductListInitial extends ProductListState {
+class ProductListInitial extends ProductListState {
   const ProductListInitial(super.products);
 }
 
-final class ProductListUpdating extends ProductListState {
+class ProductListUpdating extends ProductListState {
   const ProductListUpdating(super.products);
 }
 
-final class ProductListUpdated extends ProductListState {
+class ProductListUpdated extends ProductListState {
   const ProductListUpdated(super.products);
+}
+
+class ProductListUpdateError extends ProductListState {
+  final String error;
+  const ProductListUpdateError(super.products, this.error);
 }
