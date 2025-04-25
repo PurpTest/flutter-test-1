@@ -1,7 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:product_list/cubit/product_list_cubit.dart';
-import 'package:product_list/model/product_list_model.dart';
+import 'package:product_list/utils/pop_up_util.dart';
 
 class ProductList extends StatefulWidget {
   const ProductList({super.key});
@@ -12,12 +14,36 @@ class ProductList extends StatefulWidget {
 
 class _ProductListState extends State<ProductList> {
   late ProductListCubit _productListCubit;
+  final TextEditingController _searchController = TextEditingController();
+  Timer? _debounce;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _productListCubit = BlocProvider.of<ProductListCubit>(context);
     _productListCubit.loadProductList();
+    _searchController.addListener(() {
+      _productListCubit.filterProducts(_searchController.text);
+    });
+  }
+
+  // Extract unique categories from the product list
+  List<String> _getCategories(ProductListState state) {
+    if (state is ProductListUpdated) {
+      return state.products
+          .map((product) => product.category)
+          .where((category) => category.isNotEmpty)
+          .toSet()
+          .toList();
+    }
+    return [];
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -45,22 +71,80 @@ class _ProductListState extends State<ProductList> {
             ),
           ),
         ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(50),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Search Product',
+                hintStyle: const TextStyle(color: Colors.grey),
+                prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _searchController.clear();
+                          });
+                        },
+                        icon: const Icon(
+                          Icons.clear,
+                          color: Colors.grey,
+                        ),
+                      )
+                    : null,
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: BlocBuilder<ProductListCubit, ProductListState>(
           builder: (context, productListState) {
-            if (productListState.products.isEmpty) {
+            if (productListState is ProductListUpdating) {
               return const Center(child: CircularProgressIndicator());
+            } else if (productListState is ProductListUpdateError) {
+              return Center(child: Text(productListState.error));
+            } else if (productListState is ProductListUpdated) {
+              if (productListState.filteredProducts.isEmpty &&
+                  productListState.products.isEmpty) {
+                return const Center(child: Text('No products available'));
+              } else if (productListState.filteredProducts.isEmpty) {
+                return const Center(child: Text('No products found'));
+              }
             }
             return Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(
-                  "${productListState.products.length.toString()} Items",
-                  style: const TextStyle(
-                    fontSize: 15,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        categoryDialog(
+                          context: context,
+                          category: _getCategories(productListState),
+                          productListCubit: _productListCubit,
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.filter_alt_sharp,
+                      ),
+                    ),
+                    Text(
+                      "${productListState.filteredProducts.length.toString()} Items",
+                      style: const TextStyle(
+                        fontSize: 15,
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(
                   height: 10,
@@ -73,9 +157,9 @@ class _ProductListState extends State<ProductList> {
                       mainAxisSpacing: 10,
                       childAspectRatio: 0.7,
                     ),
-                    itemCount: productListState.products.length,
+                    itemCount: productListState.filteredProducts.length,
                     itemBuilder: (context, index) {
-                      final product = productListState.products[index];
+                      final product = productListState.filteredProducts[index];
                       return MouseRegion(
                         cursor: SystemMouseCursors.click,
                         child: InkWell(
@@ -93,7 +177,8 @@ class _ProductListState extends State<ProductList> {
                               children: [
                                 // Image placeholder
                                 Container(
-                                  height: MediaQuery.of(context).size.height * 0.10,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.10,
                                   width: double.infinity,
                                   decoration: const BoxDecoration(
                                     color: Colors.white,
@@ -113,7 +198,8 @@ class _ProductListState extends State<ProductList> {
                                   padding: const EdgeInsets.all(8),
                                   child: Column(
                                     // mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         product.title,
@@ -173,7 +259,8 @@ class _ProductListState extends State<ProductList> {
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor: Colors.blue,
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(
+                                              borderRadius:
+                                                  BorderRadius.circular(
                                                 5,
                                               ),
                                             ),
