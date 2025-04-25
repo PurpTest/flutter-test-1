@@ -4,6 +4,7 @@ class ProductListModel {
   final double price;
   final String description;
   final String image;
+  final String category;
   final Map<String, dynamic> rating;
 
   const ProductListModel({
@@ -11,6 +12,7 @@ class ProductListModel {
     required this.price,
     required this.description,
     required this.image,
+    required this.category,
     required this.rating,
   });
 
@@ -20,11 +22,12 @@ class ProductListModel {
       price: (json['price'] as num).toDouble(),
       description: json['description'] ?? '',
       image: json['image'] ?? '',
+      category: json['category'] ?? '',
       rating: json['rating'],
     );
   }
 
   @override
   String toString() =>
-      'ProductListModel(title: $title, price: $price, description: $description, rating: $rating,)';
+      'ProductListModel(title: $title, price: $price, description: $description, category: $category rating: $rating,)';
 }
