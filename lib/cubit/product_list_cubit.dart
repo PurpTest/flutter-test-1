@@ -21,7 +21,7 @@ class ProductListCubit extends Cubit<ProductListState> {
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
-        // print('Response Body:\n${response.body}');
+        print('Response Body:\n${response.body}');
 
         final products = data.map((e) => ProductListModel.fromJson(e as Map<String, dynamic>)).toList();
         // for (var prod in products) {

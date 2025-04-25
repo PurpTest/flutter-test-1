@@ -43,7 +43,7 @@ class _ProductListState extends State<ProductList> {
               Icons.shopping_bag,
               color: Colors.white,
             ),
-          )
+          ),
         ],
       ),
       body: Padding(
@@ -95,11 +95,15 @@ class _ProductListState extends State<ProductList> {
                                 Container(
                                   height: MediaQuery.of(context).size.height * 0.10,
                                   width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[300],
-                                    borderRadius: const BorderRadius.vertical(
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.vertical(
                                       top: Radius.circular(8),
                                     ),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Image.network(product.image),
                                   ),
                                   // color: Colors.red, // Replace with Image.network if available
                                   // Example: Image.network(_product_list[index].image, fit: BoxFit.cover),
