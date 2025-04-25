@@ -43,7 +43,7 @@ class _ProductListState extends State<ProductList> {
               Icons.shopping_bag,
               color: Colors.white,
             ),
-          )
+          ),
         ],
       ),
       body: Padding(
@@ -76,107 +76,123 @@ class _ProductListState extends State<ProductList> {
                     itemCount: productListState.products.length,
                     itemBuilder: (context, index) {
                       final product = productListState.products[index];
-                      return Card(
-                        elevation: 2,
-                        color: Colors.white,
-                        child: Column(
-                          children: [
-                            // Image placeholder
-                            Container(
-                              height: MediaQuery.of(context).size.height * 0.10,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[300],
-                                borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(8),
+                      return MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              '/details',
+                              arguments: product,
+                            );
+                          },
+                          child: Card(
+                            elevation: 2,
+                            color: Colors.white,
+                            child: Column(
+                              children: [
+                                // Image placeholder
+                                Container(
+                                  height: MediaQuery.of(context).size.height * 0.10,
+                                  width: double.infinity,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(8),
+                                    ),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Image.network(product.image),
+                                  ),
+                                  // color: Colors.red, // Replace with Image.network if available
+                                  // Example: Image.network(_product_list[index].image, fit: BoxFit.cover),
                                 ),
-                              ),
-                              // color: Colors.red, // Replace with Image.network if available
-                              // Example: Image.network(_product_list[index].image, fit: BoxFit.cover),
-                            ),
 
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Column(
-                                // mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    product.title,
-                                    style: const TextStyle(
-                                      // fontSize: screenWidth * 0.0335,
-                                      color: Colors.black,
-                                      fontSize: 14,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 2,
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(
-                                    "\$${product.price}",
-                                    style: const TextStyle(
-                                      // fontSize: screenWidth * 0.0335,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Row(
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Column(
+                                    // mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        " ${product.rating["rate"]} ",
+                                        product.title,
                                         style: const TextStyle(
-                                          // fontSize: screenWidth * 0.035,
+                                          // fontSize: screenWidth * 0.0335,
                                           color: Colors.black,
-                                          fontSize: 12,
+                                          fontSize: 14,
                                         ),
-                                      ),
-                                      const Icon(
-                                        Icons.star,
-                                        color: Colors.orange,
-                                        size: 14,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 2,
                                       ),
                                       const SizedBox(
-                                        width: 5,
+                                        height: 10,
                                       ),
                                       Text(
-                                        "(${product.rating["count"]})",
-                                        style: TextStyle(
-                                          color: Colors.grey[300],
-                                          fontSize: 12,
+                                        "\$${product.price}",
+                                        style: const TextStyle(
+                                          // fontSize: screenWidth * 0.0335,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
                                         ),
-                                      )
-                                    ],
-                                  ),
-                                  const SizedBox(height: 5),
-                                  SizedBox(
-                                    width: double.infinity,
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.blue,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            5,
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            " ${product.rating["rate"]} ",
+                                            style: const TextStyle(
+                                              // fontSize: screenWidth * 0.035,
+                                              color: Colors.black,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                          const Icon(
+                                            Icons.star,
+                                            color: Colors.orange,
+                                            size: 14,
+                                          ),
+                                          const SizedBox(
+                                            width: 5,
+                                          ),
+                                          Text(
+                                            "(${product.rating["count"]})",
+                                            style: TextStyle(
+                                              color: Colors.grey[300],
+                                              fontSize: 12,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                      const SizedBox(height: 5),
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.blue,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(
+                                                5,
+                                              ),
+                                            ),
+                                          ),
+                                          onPressed: () {},
+                                          child: const Text(
+                                            'Add to Cart',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
                                           ),
                                         ),
                                       ),
-                                      onPressed: () {},
-                                      child: const Text(
-                                        'Add to Cart',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
+                                    ],
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                       );
                     },
